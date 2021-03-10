@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     if args.mode == 'ga':
         ga = GA(args.percentage_split, args.percentage_back_test, args.split, args.fixed, args.shuffle, args.tmp)
-        last_pop_fitness, fitness_gen, recall_test = ga.evolution(total_feature=8,
+        last_pop_fitness, fitness_gen, mae_test = ga.evolution(total_feature=8,
                                                     pc=args.pc,
                                                     pm=args.pm,
                                                     population_size=args.population,
@@ -73,7 +73,7 @@ if __name__ == '__main__':
                                                     select_best_only=args.select_best_only)
         print("fitness: ", last_pop_fitness)
         print("gen: ", fitness_gen)
-        print("recall_test: ", recall_test)
+        print("MAE test: ", mae_test)
 
     else:
         raise RuntimeError("Mode needs to be train/evaluate/test!")

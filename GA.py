@@ -65,64 +65,70 @@ class GA(object):
 
     def fitness_shuffle_gen(self, gen_array):
         input_features = []
-        for index, value in enumerate(gen_array, start=0):
-            if value == 1:
-                input_features.append(self.features[index])
+        if (np.all(gen_array == gen_array[0]) and gen_array[0] == 0):
+            return 99999, 99999
+        else:
+            for index, value in enumerate(gen_array, start=0):
+                if value == 1:
+                    input_features.append(self.features[index])
 
-        if self.split_training_data:
-            dataset = pd.read_csv(self.dataset_csv)
-            if self.fixed_splitted_data:
-                random_number_dataset = random.randint(
-                    1, self.number_of_minor_dataset)
-                tmp_dataset = pd.read_csv('data/csv/ga/dataset_{}.csv'.format(str(random_number_dataset)), usecols=input_features + self.target_feature).to_numpy()
-                self.X_train, self.y_train, self.X_valid, self.y_valid, self.X_test, self.y_test = split_dataset(tmp_dataset)
-                # TO DO HERE
-            else:
-                pivot = int(self.percentage_split * len(dataset) / 100)
-                random_start_point = random.randint(0, len(dataset) - pivot)
-                tmp_dataset = dataset.iloc[
-                    random_start_point:random_start_point + pivot]
-                tmp_dataset.to_csv('data/csv/ga/flex_shuffle_split_data_{}.csv'.format(str(self.tmp)))
-                tmp_dataset = pd.read_csv('data/csv/ga/flex_shuffle_split_data_{}.csv'.format(str(self.tmp)), usecols=input_features + self.target_feature).to_numpy()
-                self.X_train, self.y_train, self.X_valid, self.y_valid, self.X_test, self.y_test = split_dataset(tmp_dataset)
-                # TO DO HERE
-
-        start_time = time.time()
-        # self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
-        self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_valid, self.y_valid)], verbose=0)
-        test_results = self.model.predict(self.X_test)
-        recall = mean_absolute_error(self.y_test, test_results)
-        return recall, np.sum(np.array(time.time() - start_time))
-
-    def fitness(self, gen_array, random_number_dataset):
-        input_features = []
-        for index, value in enumerate(gen_array, start=0):
-            if value == 1:
-                input_features.append(self.features[index])
-
-        if self.split_training_data:
-            dataset = pd.read_csv(self.dataset_csv)
-            if self.fixed_splitted_data:
-                tmp_dataset = pd.read_csv('data/csv/ga/dataset_{}.csv'.format(str(random_number_dataset)), usecols=input_features + self.target_feature).to_numpy()
-                self.X_train, self.y_train, self.X_valid, self.y_valid, self.X_test, self.y_test = split_dataset(tmp_dataset)
-            else:
-                pivot = int(self.percentage_split * len(dataset) / 100)
-                if self.gen != self.count_gen:
+            if self.split_training_data:
+                dataset = pd.read_csv(self.dataset_csv)
+                if self.fixed_splitted_data:
+                    random_number_dataset = random.randint(
+                        1, self.number_of_minor_dataset)
+                    tmp_dataset = pd.read_csv('data/csv/ga/dataset_{}.csv'.format(str(random_number_dataset)), usecols=input_features + self.target_feature).to_numpy()
+                    self.X_train, self.y_train, self.X_valid, self.y_valid, self.X_test, self.y_test = split_dataset(tmp_dataset)
+                    # TO DO HERE
+                else:
+                    pivot = int(self.percentage_split * len(dataset) / 100)
                     random_start_point = random.randint(0, len(dataset) - pivot)
                     tmp_dataset = dataset.iloc[
                         random_start_point:random_start_point + pivot]
-                    tmp_dataset.to_csv('data/csv/ga/flex_no_shuffle_split_data_{}.csv'.format(str(self.tmp)))
-                    tmp_dataset = pd.read_csv('data/csv/ga/flex_no_shuffle_split_data_{}.csv'.format(str(self.tmp)), usecols=input_features + self.target_feature).to_numpy()
+                    tmp_dataset.to_csv('data/csv/ga/flex_shuffle_split_data_{}.csv'.format(str(self.tmp)))
+                    tmp_dataset = pd.read_csv('data/csv/ga/flex_shuffle_split_data_{}.csv'.format(str(self.tmp)), usecols=input_features + self.target_feature).to_numpy()
                     self.X_train, self.y_train, self.X_valid, self.y_valid, self.X_test, self.y_test = split_dataset(tmp_dataset)
-                    self.count_gen = self.gen
-                # TO DO HERE
+                    # TO DO HERE
 
-        start_time = time.time()
-        # self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
-        self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_valid, self.y_valid)], verbose=0)
-        test_results = self.model.predict(self.X_test)
-        recall = mean_absolute_error(self.y_test, test_results)
-        return recall, np.sum(np.array(time.time() - start_time))
+            start_time = time.time()
+            # self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
+            self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_valid, self.y_valid)], verbose=0)
+            test_results = self.model.predict(self.X_test)
+            mae = mean_absolute_error(self.y_test, test_results)
+            return mae, np.sum(np.array(time.time() - start_time))
+
+    def fitness(self, gen_array, random_number_dataset):
+        input_features = []
+        if (np.all(gen_array == gen_array[0]) and gen_array[0] == 0):
+            return 99999, 99999
+        else:
+            for index, value in enumerate(gen_array, start=0):
+                if value == 1:
+                    input_features.append(self.features[index])
+
+            if self.split_training_data:
+                dataset = pd.read_csv(self.dataset_csv)
+                if self.fixed_splitted_data:
+                    tmp_dataset = pd.read_csv('data/csv/ga/dataset_{}.csv'.format(str(random_number_dataset)), usecols=input_features + self.target_feature).to_numpy()
+                    self.X_train, self.y_train, self.X_valid, self.y_valid, self.X_test, self.y_test = split_dataset(tmp_dataset)
+                else:
+                    pivot = int(self.percentage_split * len(dataset) / 100)
+                    if self.gen != self.count_gen:
+                        random_start_point = random.randint(0, len(dataset) - pivot)
+                        tmp_dataset = dataset.iloc[
+                            random_start_point:random_start_point + pivot]
+                        tmp_dataset.to_csv('data/csv/ga/flex_no_shuffle_split_data_{}.csv'.format(str(self.tmp)))
+                        tmp_dataset = pd.read_csv('data/csv/ga/flex_no_shuffle_split_data_{}.csv'.format(str(self.tmp)), usecols=input_features + self.target_feature).to_numpy()
+                        self.X_train, self.y_train, self.X_valid, self.y_valid, self.X_test, self.y_test = split_dataset(tmp_dataset)
+                        self.count_gen = self.gen
+                    # TO DO HERE
+
+            start_time = time.time()
+            # self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
+            self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_valid, self.y_valid)], verbose=0)
+            test_results = self.model.predict(self.X_test)
+            mae = mean_absolute_error(self.y_test, test_results)
+            return mae, np.sum(np.array(time.time() - start_time))
 
     def individual(self, total_feature):
         a = [0 for _ in range(total_feature)]
@@ -191,11 +197,11 @@ class GA(object):
 
     def selection(self, popu, population_size, best_only=True):
         if best_only:
-            new_list = sorted(popu, key=itemgetter("fitness"), reverse=True)
+            new_list = sorted(popu, key=itemgetter("fitness"), reverse=False)
             return new_list[:population_size]
         else:
             n = math.floor(population_size / 2)
-            temp = sorted(popu, key=itemgetter("fitness"), reverse=True)
+            temp = sorted(popu, key=itemgetter("fitness"), reverse=False)
             new_list = temp[:n]
             while len(new_list) < population_size:
                 i = random.randint(n, len(temp) - 1)
@@ -300,11 +306,11 @@ class GA(object):
         # self.model.fit(x_train, y_train, eval_set=[(x_train, y_train), (x_valid, y_valid)], verbose=0)
         self.model.fit(x_train, y_train, eval_set=[(x_valid, y_valid)], verbose=0)
         test_results = self.model.predict(x_test)
-        recall_test = mean_absolute_error(y_test, test_results)
+        mae_test = mean_absolute_error(y_test, test_results)
         write_log(path=ga_log_path,
                            filename="fitness_gen.csv",
-                           error=[total_time_training]+[recall_test])
-        return pop_fitness, population[0]["gen"], recall_test
+                           error=[total_time_training]+[mae_test])
+        return pop_fitness, population[0]["gen"], mae_test
 
 
 def write_log(path, filename, error, input_feature = []):
