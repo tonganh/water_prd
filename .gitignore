@@ -1,7 +1,2 @@
-*
-!./data/pima_indians_diabetes.csv
-!.gitignore
-!./log
-!./GA.py
-!./main.py
-!./XGB.py
+output_analysis
+__pycache__
