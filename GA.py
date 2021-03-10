@@ -26,14 +26,16 @@ class GA(object):
         self.percentage_split = percentage_split
         self.percentage_back_test = percentage_back_test
         self.shuffle_gen = shuffle_gen
-        self.dataset_csv = 'data/pima_indians_diabetes.csv'
+        self.dataset_csv = 'data/credit_card.csv'
         self.split_training_data = split_training_data
         self.fixed_splitted_data = fixed_splitted_data
         self.number_of_minor_dataset = self.split_data()
         self.tmp = tmp
         self.gen = 1
         self.count_gen = 0
-        self.model = xgbmodel()
+        # self.model = xgbmodel()
+        self.model = xgbmodel(objective ='reg:squarederror', max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
+        subsample=0.8, eta=0.3, seed=2)
 
     def split_data(self):
         if self.split_training_data:
@@ -86,7 +88,8 @@ class GA(object):
                 # TO DO HERE
 
         start_time = time.time()
-        self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
+        # self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
+        self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_valid, self.y_valid)], verbose=0)
         test_results = self.model.predict(self.X_test)
         recall = mean_absolute_error(self.y_test, test_results)
         return recall, np.sum(np.array(time.time() - start_time))
@@ -115,7 +118,8 @@ class GA(object):
                 # TO DO HERE
 
         start_time = time.time()
-        self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
+        # self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
+        self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_valid, self.y_valid)], verbose=0)
         test_results = self.model.predict(self.X_test)
         recall = mean_absolute_error(self.y_test, test_results)
         return recall, np.sum(np.array(time.time() - start_time))
@@ -293,8 +297,8 @@ class GA(object):
         X = dataset_train[:, 0:-1]
         Y = dataset_train[:, -1:]
         x_train, x_valid, y_train, y_valid = train_test_split(X, Y, test_size=0.2, random_state=42)
-        test_start_time = time.time()
-        self.model.fit(x_train, y_train, eval_set=[(x_train, y_train), (x_valid, y_valid)], verbose=0)
+        # self.model.fit(x_train, y_train, eval_set=[(x_train, y_train), (x_valid, y_valid)], verbose=0)
+        self.model.fit(x_train, y_train, eval_set=[(x_valid, y_valid)], verbose=0)
         test_results = self.model.predict(x_test)
         recall_test = mean_absolute_error(y_test, test_results)
         write_log(path=ga_log_path,
