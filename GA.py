@@ -284,9 +284,16 @@ class GA(object):
         for index, value in enumerate(population[0]["gen"], start=0):
             if value == 1:
                 input_features.append(self.features[index])
+        print(input_features)
+        dataset_train = pd.read_csv('data/csv/ga/dataset_train.csv', usecols=input_features + self.target_feature).to_numpy()
         dataset_test = pd.read_csv('data/csv/ga/dataset_test.csv', usecols=input_features + self.target_feature).to_numpy()
         x_test = dataset_test[:, 0:-1]
         y_test = dataset_test[:, -1:]
+        X = dataset_train[:, 0:-1]
+        Y = dataset_train[:, -1:]
+        x_train, x_valid, y_train, y_valid = train_test_split(X, Y, test_size=0.2, random_state=42)
+        test_start_time = time.time()
+        self.model.fit(x_train, y_train, eval_set=[(x_train, y_train), (x_valid, y_valid)], verbose=0)
         test_results = self.model.predict(x_test)
         recall_test = recall_score(y_test, test_results)
         write_log(path=ga_log_path,
