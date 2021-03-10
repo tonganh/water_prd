@@ -1,4 +1,5 @@
-from sklearn.metrics import recall_score
+# from sklearn.metrics import recall_score
+from sklearn.metrics import mean_absolute_error
 from xgboost import XGBRegressor as xgbmodel
 import pandas as pd
 import numpy as np
@@ -23,7 +24,7 @@ def feature_importances_xgboost(dataset, train_per=0.6, valid_per=0.2):
     time_start = time.time()
     model.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_valid, y_valid)])
     test_results = model.predict(X_test)
-    recall = recall_score(y_test, test_results)
+    recall = mean_absolute_error(y_test, test_results)
     print("Recall: %.3f" % (recall))
     print("Time training: ", time.time() - time_start)
 

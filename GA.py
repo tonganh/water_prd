@@ -1,7 +1,8 @@
 # ignore warnings
 from datetime import datetime
 import numpy as np
-from sklearn.metrics import recall_score
+# from sklearn.metrics import recall_score
+from sklearn.metrics import mean_absolute_error
 from xgboost import XGBRegressor as xgbmodel
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -87,7 +88,7 @@ class GA(object):
         start_time = time.time()
         self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
         test_results = self.model.predict(self.X_test)
-        recall = recall_score(self.y_test, test_results)
+        recall = mean_absolute_error(self.y_test, test_results)
         return recall, np.sum(np.array(time.time() - start_time))
 
     def fitness(self, gen_array, random_number_dataset):
@@ -116,7 +117,7 @@ class GA(object):
         start_time = time.time()
         self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
         test_results = self.model.predict(self.X_test)
-        recall = recall_score(self.y_test, test_results)
+        recall = mean_absolute_error(self.y_test, test_results)
         return recall, np.sum(np.array(time.time() - start_time))
 
     def individual(self, total_feature):
@@ -295,7 +296,7 @@ class GA(object):
         test_start_time = time.time()
         self.model.fit(x_train, y_train, eval_set=[(x_train, y_train), (x_valid, y_valid)], verbose=0)
         test_results = self.model.predict(x_test)
-        recall_test = recall_score(y_test, test_results)
+        recall_test = mean_absolute_error(y_test, test_results)
         write_log(path=ga_log_path,
                            filename="fitness_gen.csv",
                            error=[total_time_training]+[recall_test])
