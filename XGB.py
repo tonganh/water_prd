@@ -1,5 +1,5 @@
 from sklearn.metrics import recall_score
-from xgboost import XGBClassifier as xgbmodel
+from xgboost import XGBRegressor as xgbmodel
 import pandas as pd
 import numpy as np
 import time

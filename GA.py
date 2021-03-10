@@ -2,7 +2,7 @@
 from datetime import datetime
 import numpy as np
 from sklearn.metrics import recall_score
-from xgboost import XGBClassifier as xgbmodel
+from xgboost import XGBRegressor as xgbmodel
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import math
