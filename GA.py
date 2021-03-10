@@ -21,7 +21,8 @@ warnings.simplefilter(action='ignore', category=UserWarning)
 class GA(object):
     def __init__(self, percentage_split, percentage_back_test,
                  split_training_data, fixed_splitted_data, shuffle_gen, tmp):
-        self.features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
+        # self.features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
+        self.features = ['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 'V28']
         self.target_feature = ['Outcome']
         self.percentage_split = percentage_split
         self.percentage_back_test = percentage_back_test
