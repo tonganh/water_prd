@@ -1,0 +1,7 @@
+*
+!./data/pima_indians_diabetes.csv
+!./data/csv/ga
+!.gitignore
+!./log
+!./GA.py
+!./main.py
