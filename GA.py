@@ -34,8 +34,7 @@ class GA(object):
         self.gen = 1
         self.count_gen = 0
         # self.model = xgbmodel()
-        self.model = xgbmodel(objective ='reg:squarederror', max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
-        subsample=0.8, eta=0.3, seed=2)
+        self.model = xgbmodel(objective='reg:squarederror')
 
     def split_data(self):
         if self.split_training_data:

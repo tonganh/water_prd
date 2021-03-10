@@ -21,10 +21,7 @@ def feature_importances_xgboost(dataset, train_per=0.6, valid_per=0.2):
     X_test = X[train_size+valid_size:]
     y_test = Y[train_size+valid_size:]
     # model = xgbmodel()
-    model = model = xgbmodel(objective ='reg:squarederror', max_depth=8, n_estimators=1000, min_child_weight=300, colsample_bytree=0.8, 
-    subsample=0.8, eta=0.3, seed=2)
-
-    
+    model = xgbmodel(objective='reg:squarederror')
     time_start = time.time()
     # model.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_valid, y_valid)])
     model.fit(X_train, y_train, eval_metric="mae", eval_set=[(X_valid, y_valid)], verbose=False)
