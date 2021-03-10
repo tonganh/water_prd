@@ -2,7 +2,7 @@
 from datetime import datetime
 import numpy as np
 from sklearn.metrics import recall_score
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier as xgbmodel
 import pandas as pd
 from sklearn.model_selection import train_test_split
 import math
@@ -32,7 +32,7 @@ class GA(object):
         self.tmp = tmp
         self.gen = 1
         self.count_gen = 0
-        self.model = XGBClassifier()
+        self.model = xgbmodel()
 
     def split_data(self):
         if self.split_training_data:

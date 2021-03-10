@@ -1,5 +1,5 @@
 from sklearn.metrics import recall_score
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier as xgbmodel
 import pandas as pd
 import numpy as np
 import time
@@ -19,7 +19,7 @@ def feature_importances_xgboost(dataset, train_per=0.6, valid_per=0.2):
     y_valid = Y[train_size:train_size+valid_size]
     X_test = X[train_size+valid_size:]
     y_test = Y[train_size+valid_size:]
-    model = XGBClassifier()
+    model = xgbmodel()
     time_start = time.time()
     model.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_valid, y_valid)])
     test_results = model.predict(X_test)
