@@ -2,7 +2,7 @@
 from datetime import datetime
 import numpy as np
 # from sklearn.metrics import recall_score
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, r2_score
 from xgboost import XGBRegressor as xgbmodel
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -22,12 +22,15 @@ class GA(object):
     def __init__(self, percentage_split, percentage_back_test,
                  split_training_data, fixed_splitted_data, shuffle_gen, tmp):
         # self.features = ['Pregnancies', 'Glucose', 'BloodPressure', 'SkinThickness', 'Insulin', 'BMI', 'DiabetesPedigreeFunction', 'Age']
-        self.features = ['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 'V28']
-        self.target_feature = ['Amount']
+        # self.features = ['V1', 'V2', 'V3', 'V4', 'V5', 'V6', 'V7', 'V8', 'V9', 'V10', 'V11', 'V12', 'V13', 'V14', 'V15', 'V16', 'V17', 'V18', 'V19', 'V20', 'V21', 'V22', 'V23', 'V24', 'V25', 'V26', 'V27', 'V28']
+        self.features = ['TOC', 'UV254', 'Temperature', 'pH', 'Turbidity', 'Br', 'EC', 'BOD', 'COD', 'DO', 'SS', 'NH3-N', 'Biopolymer', 'HS', 'BB', 'LMWN']
+        self.target_feature = ['THMFP']
+        # self.target_feature = ['HAAFP']
         self.percentage_split = percentage_split
         self.percentage_back_test = percentage_back_test
         self.shuffle_gen = shuffle_gen
-        self.dataset_csv = 'data/credit_card.csv'
+        # self.dataset_csv = 'data/credit_card.csv'
+        self.dataset_csv = 'data/hoat_chat.csv'
         self.split_training_data = split_training_data
         self.fixed_splitted_data = fixed_splitted_data
         self.number_of_minor_dataset = self.split_data()
@@ -40,7 +43,8 @@ class GA(object):
     def split_data(self):
         if self.split_training_data:
             dataset = pd.read_csv(self.dataset_csv)
-            pivot_split_train_test = int(0.8*(len(dataset)))
+            dataset = dataset.dropna()
+            pivot_split_train_test = int(0.6*(len(dataset)))
             dataset_train = dataset[0: pivot_split_train_test]
             dataset_train.to_csv('data/csv/ga/dataset_train.csv')
             dataset_test = dataset[pivot_split_train_test:]
@@ -94,8 +98,9 @@ class GA(object):
             # self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
             self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_valid, self.y_valid)], verbose=0)
             test_results = self.model.predict(self.X_test)
-            mae = mean_absolute_error(self.y_test, test_results)
-            return mae, np.sum(np.array(time.time() - start_time))
+            # mae = mean_absolute_error(self.y_test, test_results)
+            r2 = r2_score(self.y_test, test_results)
+            return r2, np.sum(np.array(time.time() - start_time))
 
     def fitness(self, gen_array, random_number_dataset):
         input_features = []
@@ -127,8 +132,9 @@ class GA(object):
             # self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_train, self.y_train), (self.X_valid, self.y_valid)], verbose=0)
             self.model.fit(self.X_train, self.y_train, eval_set=[(self.X_valid, self.y_valid)], verbose=0)
             test_results = self.model.predict(self.X_test)
-            mae = mean_absolute_error(self.y_test, test_results)
-            return mae, np.sum(np.array(time.time() - start_time))
+            # mae = mean_absolute_error(self.y_test, test_results)
+            r2 = r2_score(self.y_test, test_results)
+            return r2, np.sum(np.array(time.time() - start_time))
 
     def individual(self, total_feature):
         a = [0 for _ in range(total_feature)]
@@ -197,11 +203,11 @@ class GA(object):
 
     def selection(self, popu, population_size, best_only=True):
         if best_only:
-            new_list = sorted(popu, key=itemgetter("fitness"), reverse=False)
+            new_list = sorted(popu, key=itemgetter("fitness"), reverse=True)
             return new_list[:population_size]
         else:
             n = math.floor(population_size / 2)
-            temp = sorted(popu, key=itemgetter("fitness"), reverse=False)
+            temp = sorted(popu, key=itemgetter("fitness"), reverse=True)
             new_list = temp[:n]
             while len(new_list) < population_size:
                 i = random.randint(n, len(temp) - 1)
@@ -226,7 +232,7 @@ class GA(object):
             indi = self.individual(total_feature=total_feature)
             population.append(indi)
             first_training_time += indi["time"]
-        new_pop = sorted(population, key=itemgetter("fitness"), reverse=False)
+        # new_pop = sorted(population, key=itemgetter("fitness"), reverse=False)
         write_log(path=ga_log_path,
                            filename="fitness_gen.csv",
                            error=[
@@ -302,15 +308,24 @@ class GA(object):
         y_test = dataset_test[:, -1:]
         X = dataset_train[:, 0:-1]
         Y = dataset_train[:, -1:]
-        x_train, x_valid, y_train, y_valid = train_test_split(X, Y, test_size=0.2, random_state=42)
+        # x_train, x_valid, y_train, y_valid = train_test_split(X, Y, test_size=0, random_state=42)
         # self.model.fit(x_train, y_train, eval_set=[(x_train, y_train), (x_valid, y_valid)], verbose=0)
-        self.model.fit(x_train, y_train, eval_set=[(x_valid, y_valid)], verbose=0)
+        # self.model.fit(x_train, y_train, eval_set=[(x_valid, y_valid)], verbose=0)
+        self.model.fit(X, Y, verbose=0)
+
         test_results = self.model.predict(x_test)
-        mae_test = mean_absolute_error(y_test, test_results)
+        # mae_test = mean_absolute_error(y_test, test_results)
+        r2_test = r2_score(y_test, test_results)
+
+        train_results = self.model.predict(X)
+        r2_train = r2_score(Y, train_results)
+
+        all_results = self.model.predict(np.concatenate((X,x_test)))
+        r2_all = r2_score(np.concatenate((Y,y_test)), all_results)
         write_log(path=ga_log_path,
                            filename="fitness_gen.csv",
-                           error=[total_time_training]+[mae_test])
-        return pop_fitness, population[0]["gen"], mae_test
+                           error=[total_time_training]+[r2_test])
+        return pop_fitness, population[0]["gen"], r2_all, r2_train, r2_test
 
 
 def write_log(path, filename, error, input_feature = []):

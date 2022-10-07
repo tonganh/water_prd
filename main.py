@@ -44,7 +44,7 @@ if __name__ == '__main__':
                         type=int,
                         help='Population size')
     parser.add_argument('--gen',
-                        default=50,
+                        default=100,
                         type=int,
                         help='Number of generation')
     parser.add_argument('--select_best_only',
@@ -65,7 +65,7 @@ if __name__ == '__main__':
 
     if args.mode == 'ga':
         ga = GA(args.percentage_split, args.percentage_back_test, args.split, args.fixed, args.shuffle, args.tmp)
-        last_pop_fitness, fitness_gen, mae_test = ga.evolution(total_feature=8,
+        last_pop_fitness, fitness_gen, r2_all, r2_train, r2_test = ga.evolution(total_feature=16,
                                                     pc=args.pc,
                                                     pm=args.pm,
                                                     population_size=args.population,
@@ -73,7 +73,9 @@ if __name__ == '__main__':
                                                     select_best_only=args.select_best_only)
         print("fitness: ", last_pop_fitness)
         print("gen: ", fitness_gen)
-        print("MAE test: ", mae_test)
+        print("R2 all: ", r2_all)
+        print("R2 train: ", r2_train)
+        print("R2 test: ", r2_test)
 
     else:
         raise RuntimeError("Mode needs to be train/evaluate/test!")
