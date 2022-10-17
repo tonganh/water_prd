@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from rulefit import RuleFit
+from analysis.rulefit import RuleFit
 from sklearn.ensemble import GradientBoostingRegressor
 
 
