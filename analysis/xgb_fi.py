@@ -58,17 +58,23 @@ def feature_importances_xgboost(dataset, df_cols, target, train_per=0.6, valid_p
 
 
 if __name__ == "__main__":
-    dataset = pd.read_csv('data/hoat_chat.csv')
-    dataset = dataset.drop(columns=["Date", "Site", "Sample"])
-    target = "THMFP"
-    target = "HAAFP"
+    # dataset = pd.read_csv('data/hoat_chat.csv')
+    # dataset = dataset.drop(columns=["Date", "Site", "Sample"])
+    # target = "THMFP"
+    # target = "HAAFP"
+    # dataset = dataset.dropna()
+    # if target == "THMFP":
+    #     # cols[-2], cols[-1] = cols[-1], cols[-2]
+    #     # dataset = dataset.reindex(columns=cols)
+    #     dataset = dataset.drop(columns=["HAAFP"])
+    # else:
+    #     dataset = dataset.drop(columns=["THMFP"])
+    # cols = list(dataset.columns)
+    # print(cols)
+    # feature_importances_xgboost(dataset, cols, target)
+
+    dataset = pd.read_csv('../data/clo.csv', usecols=["Water Temp.","pH","DO","DOC","BOD5","CODMn","DTN","DTP","EC","SS","UV254","E250/E365","E350/E400","S275-295","S350-400","SR","FI450","FI470","BIX","HIX","C1","C2","C3","D1","D2","D3","D4","Chl-a"])
     dataset = dataset.dropna()
-    if target == "THMFP":
-        # cols[-2], cols[-1] = cols[-1], cols[-2]
-        # dataset = dataset.reindex(columns=cols)
-        dataset = dataset.drop(columns=["HAAFP"])
-    else:
-        dataset = dataset.drop(columns=["THMFP"])
     cols = list(dataset.columns)
-    print(cols)
+    target = "Chl-a"
     feature_importances_xgboost(dataset, cols, target)
