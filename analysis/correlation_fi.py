@@ -5,42 +5,6 @@ import seaborn as sns
 sns.set()
 import numpy as np
 
-path_dataset = './data/pima_indians_diabetes.csv'
-path_output = './output_analysis/'
-
-
-def get_data_numpy():
-    dataset = pd.read_csv(path_dataset)
-    return dataset.to_numpy(), dataset.columns
-
-
-def get_data_dataframe():
-    dataset = pd.read_csv(path_dataset)
-    return dataset
-
-
-def check_null(dataset_numpy):
-    dataset = pd.read_csv(path_dataset)
-    summary_null = dataset.isnull().sum()
-    summary_null.to_csv(path_output + 'credit_card_summary.csv')
-
-
-def plot_data(dataset_numpy, cols):
-    plt.figure(figsize=[6, 6])
-    for i in range(dataset_numpy.shape[1]):
-        plt.plot(dataset_numpy[:200, i], label=cols[i])
-    plt.legend(loc=1, prop={'size': 8})
-    plt.xlabel('Number of rows')
-    plt.ylabel('Values')
-    # plt.gca().set_position([0, 0, 1, 1])
-    plt.savefig('./output_analysis/plot_data_{}.svg'.format(cols[i]))
-    plt.close()
-
-
-# dataset_numpy, cols = get_data_numpy()
-# plot_data(dataset_numpy, cols.tolist())
-
-
 def heatmap(x, y, **kwargs):
     if 'color' in kwargs:
         color = kwargs['color']
@@ -169,9 +133,8 @@ def corrplot(data, size_scale=500, marker='s'):
     )
 
 
-dataset_frame = get_data_dataframe()
-data = pd.read_csv('https://raw.githubusercontent.com/drazenz/heatmap/master/autos.clean.csv')
+# dataset_frame = get_data_dataframe()
+data = pd.read_csv('../data/clo.csv', usecols=["Water Temp.","pH","DO","DOC","BOD5","CODMn","DTN","DTP","EC","SS","UV254","E250/E365","E350/E400","S275-295","S350-400","SR","FI450","FI470","BIX","HIX","C1","C2","C3","D1","D2","D3","D4","Chl-a"])
 plt.figure(figsize=(10, 10))
-corrplot(dataset_frame.corr())
-plt.savefig('./output_analysis/heatmap.svg')
-# plt.show()
+corrplot(data.corr())
+plt.savefig('heatmap.png')

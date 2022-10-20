@@ -209,14 +209,16 @@ def evaluate(scaler, gt, pred, algo, phase_name):
     # gt = scaler.inverse_transform(gt)
     # pred = scaler.inverse_transform(pred)
     # data_predicted = scaler[:,i]
-    pred_ori = pred - scaler.min_[-1] # aqmesh
-    pred_ori /= scaler.scale_[-1] # aqmesh
-    gt_ori = gt - scaler.min_[-1] # aqmesh
-    gt_ori /= scaler.scale_[-1] # aqmesh
+    # pred_ori = pred - scaler.min_[-1] # aqmesh
+    # pred_ori /= scaler.scale_[-1] # aqmesh
+    # gt_ori = gt - scaler.min_[-1] # aqmesh
+    # gt_ori /= scaler.scale_[-1] # aqmesh
+    pred_ori = pred
+    gt_ori = gt
 
     mae = mean_absolute_error(gt_ori, pred_ori)
     r2 = r2_score(gt_ori, pred_ori)
-    plt.figure(figsize=(16, 7))
+    # plt.figure(figsize=(16, 7))
     plt.plot(gt_ori, label="gt")
     plt.plot(pred_ori, label="pred")
     plt.legend()
