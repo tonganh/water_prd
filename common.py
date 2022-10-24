@@ -8,6 +8,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 from sklearn.preprocessing import MinMaxScaler
+
 def seed_everything(seed: int):
     random.seed(seed)
     os.environ['PYTHONHASHSEED'] = str(seed)
@@ -17,28 +18,18 @@ def seed_everything(seed: int):
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = True
         
-def run_xgboost(dataset):
-    X, Y, X_train, y_train, _, _, X_test, y_test, scaler = split_data(dataset)
-    # model = xgbmodel()
+def run_xgboost(X_train, y_train, X_test, y_test, scaler):
     model = xgbmodel(objective='reg:squarederror')
-    # model.fit(X_train, y_train, eval_set=[(X_train, y_train), (X_valid, y_valid)])
-    # model.fit(X_train, y_train, eval_metric="mae", eval_set=[(X_valid, y_valid)], verbose=False)
     model.fit(X_train, y_train, eval_metric="mae", verbose=False)
 
-    all_results = model.predict(X)
-    evaluate(scaler, Y, all_results, "xgboost", "all")
-
     train_results = model.predict(X_train)
-    evaluate(scaler, y_train, train_results, "xgboost", "train")
+    mae_train, r2_train = evaluate(scaler, y_train, train_results, "xgboost", "train")
 
     test_results = model.predict(X_test)
-    evaluate(scaler, y_test, test_results, "xgboost", "test")
+    mae_test, r2_test = evaluate(scaler, y_test, test_results, "xgboost", "test")
+    return mae_train, r2_train, mae_test, r2_test
 
-
-def run_dl(dataset):
-    X, Y, X_train, y_train, _, _, X_test, y_test, scaler = split_data(dataset)
-    X = torch.Tensor(X)
-    Y = torch.Tensor(Y)
+def run_dl(X_train, y_train, X_test, y_test, scaler):
     X_train = torch.Tensor(X_train)
     y_train = torch.Tensor(y_train)
     X_test = torch.Tensor(X_test)
@@ -46,7 +37,7 @@ def run_dl(dataset):
     class LinearRegression(nn.Module):
         def __init__(self):
             super(LinearRegression, self).__init__()
-            self.fc1 = nn.Linear(X.shape[1], 16)
+            self.fc1 = nn.Linear(X_train.shape[1], 16)
             self.fc2 = nn.Linear(16, 8)
             self.fc3 = nn.Linear(8, 1)
 
@@ -78,14 +69,13 @@ def run_dl(dataset):
 
     model.eval()
     with torch.no_grad():
-        all_results = model(X)
-        evaluate(scaler, Y, all_results, "dl", "all")
         train_results = model(X_train)
-        evaluate(scaler, y_train, train_results, "dl", "train")
+        mae_train, r2_train = evaluate(scaler, y_train, train_results, "dl", "train")
         test_results = model(X_test)
-        evaluate(scaler, y_test, test_results, "dl", "test")
+        mae_test, r2_test = evaluate(scaler, y_test, test_results, "dl", "test")
+    return mae_train, r2_train, mae_test, r2_test
 
-def run_stacking(dataset):
+def run_stacking(X_train, y_train, X_test, y_test, scaler):
     from sklearn.linear_model import RidgeCV
     from sklearn.svm import LinearSVR
     from sklearn.ensemble import RandomForestRegressor
@@ -94,7 +84,6 @@ def run_stacking(dataset):
     from sklearn.linear_model import LinearRegression
     from sklearn.neighbors import KNeighborsRegressor
     from sklearn.tree import DecisionTreeRegressor
-    X, Y, X_train, y_train, _, _, X_test, y_test, scaler = split_data(dataset)
     estimators = [
         ('lr', RidgeCV()),
         ('svr', LinearSVR(random_state=42)),
@@ -103,26 +92,20 @@ def run_stacking(dataset):
         ('dt', DecisionTreeRegressor(random_state=42)),
         ('xgb', GradientBoostingRegressor(random_state=42))
     ]
-    # model = StackingRegressor(
-    #     estimators=estimators,
-    #     final_estimator=RandomForestRegressor(n_estimators=10,
-    #                                         random_state=42)
-    # )
     model = StackingRegressor(
         estimators=estimators,
         final_estimator=LinearRegression()
     )
-    model.fit(X_train, y_train).score(X_test, y_test)
-    all_results = model.predict(X)
-    evaluate(scaler, Y, all_results, "stacking", "all")
+    model.fit(X_train, y_train)
 
     train_results = model.predict(X_train)
-    evaluate(scaler, y_train, train_results, "stacking", "train")
+    mae_train, r2_train = evaluate(scaler, y_train, train_results, "stacking", "train")
 
     test_results = model.predict(X_test)
-    evaluate(scaler, y_test, test_results, "stacking", "test")
+    mae_test, r2_test = evaluate(scaler, y_test, test_results, "stacking", "test")
+    return mae_train, r2_train, mae_test, r2_test
 
-def run_stacking_v2(dataset):
+def run_stacking_v2(X_train, y_train, X_test, y_test, scaler):
     from sklearn.linear_model import ElasticNet, Lasso
     from sklearn.ensemble import RandomForestRegressor,  GradientBoostingRegressor
     from sklearn.base import BaseEstimator, TransformerMixin, RegressorMixin, clone
@@ -163,7 +146,6 @@ def run_stacking_v2(dataset):
                 for base_models in self.base_models_ ])
             return self.meta_model_.predict(meta_features)
 
-    X, Y, X_train, y_train, _, _, X_test, y_test, scaler = split_data(dataset)
     lasso = Lasso(alpha=0.0005, random_state = 1,max_iter=100)
     ENet = ElasticNet(alpha = 0.0005, l1_ratio=0.9, random_state = 3,max_iter=100)
     GBoost = GradientBoostingRegressor(n_estimators = 100,learning_rate=0.05,
@@ -175,14 +157,13 @@ def run_stacking_v2(dataset):
 
 
     models.fit(X_train, y_train)
-    all_results = models.predict(X)
-    evaluate(scaler, Y, all_results, "stacking_v2", "all")
 
     train_results = models.predict(X_train)
-    evaluate(scaler, y_train, train_results, "stacking_v2", "train")
+    mae_train, r2_train = evaluate(scaler, y_train, train_results, "stacking_v2", "train")
 
     test_results = models.predict(X_test)
-    evaluate(scaler, y_test, test_results, "stacking_v2", "test")
+    mae_test, r2_test = evaluate(scaler, y_test, test_results, "stacking_v2", "test")
+    return mae_train, r2_train, mae_test, r2_test
 
 def split_data(dataset, train_per=0.6, valid_per=0.0):
     scaler = MinMaxScaler()
@@ -200,7 +181,7 @@ def split_data(dataset, train_per=0.6, valid_per=0.0):
     X_test = X[train_size+valid_size:]
     y_test = Y[train_size+valid_size:]
 
-    return X, Y, X_train, y_train, X_valid, y_valid, X_test, y_test, scaler
+    return X_train, y_train, X_valid, y_valid, X_test, y_test, scaler
 
 def evaluate(scaler, gt, pred, algo, phase_name):
     output_log = os.path.join("log", "visualization")
@@ -218,12 +199,9 @@ def evaluate(scaler, gt, pred, algo, phase_name):
 
     mae = mean_absolute_error(gt_ori, pred_ori)
     r2 = r2_score(gt_ori, pred_ori)
-    # plt.figure(figsize=(16, 7))
     plt.plot(gt_ori, label="gt")
     plt.plot(pred_ori, label="pred")
     plt.legend()
     plt.savefig(os.path.join(output_log, "pred_{}_{}.png".format(algo, phase_name)))
     plt.close()
-    print("MAE_{}: {:.3f}".format(phase_name, mae))
-    print("R2_{}: {:.3f}".format(phase_name, r2))
     return mae, r2
