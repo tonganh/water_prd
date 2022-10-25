@@ -29,7 +29,7 @@ def run_xgboost(X_train, y_train, X_test, y_test, scaler):
     mae_test, r2_test = evaluate(scaler, y_test, test_results, "xgboost", "test")
     return mae_train, r2_train, mae_test, r2_test
 
-def run_dl(X_train, y_train, X_test, y_test, scaler):
+def run_deeplearning(X_train, y_train, X_test, y_test, scaler):
     X_train = torch.Tensor(X_train)
     y_train = torch.Tensor(y_train)
     X_test = torch.Tensor(X_test)
@@ -75,37 +75,37 @@ def run_dl(X_train, y_train, X_test, y_test, scaler):
         mae_test, r2_test = evaluate(scaler, y_test, test_results, "dl", "test")
     return mae_train, r2_train, mae_test, r2_test
 
+# def run_stacking(X_train, y_train, X_test, y_test, scaler):
+#     from sklearn.linear_model import RidgeCV
+#     from sklearn.svm import LinearSVR
+#     from sklearn.ensemble import RandomForestRegressor
+#     from sklearn.ensemble import StackingRegressor
+#     from sklearn.ensemble import GradientBoostingRegressor
+#     from sklearn.linear_model import LinearRegression
+#     from sklearn.neighbors import KNeighborsRegressor
+#     from sklearn.tree import DecisionTreeRegressor
+#     estimators = [
+#         ('lr', RidgeCV()),
+#         ('svr', LinearSVR(random_state=42)),
+#         ('rf', RandomForestRegressor(random_state=42)),
+#         ('knearest', KNeighborsRegressor()),
+#         ('dt', DecisionTreeRegressor(random_state=42)),
+#         ('xgb', GradientBoostingRegressor(random_state=42))
+#     ]
+#     model = StackingRegressor(
+#         estimators=estimators,
+#         final_estimator=LinearRegression()
+#     )
+#     model.fit(X_train, y_train)
+
+#     train_results = model.predict(X_train)
+#     mae_train, r2_train = evaluate(scaler, y_train, train_results, "stacking", "train")
+
+#     test_results = model.predict(X_test)
+#     mae_test, r2_test = evaluate(scaler, y_test, test_results, "stacking", "test")
+#     return mae_train, r2_train, mae_test, r2_test
+
 def run_stacking(X_train, y_train, X_test, y_test, scaler):
-    from sklearn.linear_model import RidgeCV
-    from sklearn.svm import LinearSVR
-    from sklearn.ensemble import RandomForestRegressor
-    from sklearn.ensemble import StackingRegressor
-    from sklearn.ensemble import GradientBoostingRegressor
-    from sklearn.linear_model import LinearRegression
-    from sklearn.neighbors import KNeighborsRegressor
-    from sklearn.tree import DecisionTreeRegressor
-    estimators = [
-        ('lr', RidgeCV()),
-        ('svr', LinearSVR(random_state=42)),
-        ('rf', RandomForestRegressor(random_state=42)),
-        ('knearest', KNeighborsRegressor()),
-        ('dt', DecisionTreeRegressor(random_state=42)),
-        ('xgb', GradientBoostingRegressor(random_state=42))
-    ]
-    model = StackingRegressor(
-        estimators=estimators,
-        final_estimator=LinearRegression()
-    )
-    model.fit(X_train, y_train)
-
-    train_results = model.predict(X_train)
-    mae_train, r2_train = evaluate(scaler, y_train, train_results, "stacking", "train")
-
-    test_results = model.predict(X_test)
-    mae_test, r2_test = evaluate(scaler, y_test, test_results, "stacking", "test")
-    return mae_train, r2_train, mae_test, r2_test
-
-def run_stacking_v2(X_train, y_train, X_test, y_test, scaler):
     from sklearn.linear_model import ElasticNet, Lasso
     from sklearn.ensemble import RandomForestRegressor,  GradientBoostingRegressor
     from sklearn.base import BaseEstimator, TransformerMixin, RegressorMixin, clone
