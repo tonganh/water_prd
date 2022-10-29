@@ -36,7 +36,6 @@ def eval_mae(y_true, y_pred):
 def eval_mape(y_true, y_pred):
     # import pdb
     # pdb.set_trace()
-    print(y_true.flatten())
     return np.mean(np.abs((y_true.flatten() - y_pred.flatten()) / y_true.flatten())) * 100
 
 
@@ -395,19 +394,18 @@ def evaluate(scaler, gt, pred, algo, phase_name):
         os.makedirs(output_log)
     # gt = scaler.inverse_transform(gt)
     # pred = scaler.inverse_transform(pred)
-    # data_predicted = scaler[:,i]
-    # pred_ori = pred - scaler.min_[-1] # aqmesh
-    # pred_ori /= scaler.scale_[-1] # aqmesh
-    # gt_ori = gt - scaler.min_[-1] # aqmesh
-    # gt_ori /= scaler.scale_[-1] # aqmesh
-    pred_ori = pred
-    gt_ori = gt
+    # data_predicted = scaler[:, i]
+    pred_ori = pred - scaler.min_[-1]  # aqmesh
+    pred_ori /= scaler.scale_[-1]  # aqmesh
+    gt_ori = gt - scaler.min_[-1]  # aqmesh
+    gt_ori /= scaler.scale_[-1]  # aqmesh
+    # pred_ori = pred
+    # gt_ori = gt
 
     mae = mean_absolute_error(gt_ori, pred_ori)
     mape = eval_mape(gt_ori, pred_ori)
-    print(mape)
+    mdape = eval_mdape(gt_ori, pred_ori)
 
-    # mdape = eval_mdape(gt_ori, pred_ori)
     r2 = r2_score(gt_ori, pred_ori)
     # plt.plot(gt_ori, label="gt")
     # plt.plot(pred_ori, label="pred")
@@ -415,4 +413,4 @@ def evaluate(scaler, gt, pred, algo, phase_name):
     # plt.savefig(os.path.join(
     #     output_log, "pred_{}_{}.png".format(algo, phase_name)))
     # plt.close()
-    return mae, r2
+    return mae, mdape
