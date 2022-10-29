@@ -1,6 +1,4 @@
-import pdb
-from pprint import pprint
-from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error
+from sklearn.metrics import mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
 from xgboost import XGBRegressor as xgbmodel
 import numpy as np
@@ -16,7 +14,6 @@ from sklearn import kernel_ridge
 from sklearn import svm
 from sklearn import neighbors
 from sklearn import tree
-import math
 
 
 def seed_everything(seed: int):
@@ -27,29 +24,6 @@ def seed_everything(seed: int):
     torch.cuda.manual_seed(seed)
     torch.backends.cudnn.deterministic = True
     torch.backends.cudnn.benchmark = True
-
-
-def eval_mae(y_true, y_pred):
-    return mean_absolute_error(y_true.flatten(), y_pred.flatten())
-
-
-def eval_mape(y_true, y_pred):
-    # import pdb
-    # pdb.set_trace()
-    print(y_true.flatten())
-    return np.mean(np.abs((y_true.flatten() - y_pred.flatten()) / y_true.flatten())) * 100
-
-
-def eval_rmse(y_true, y_pred):
-    return math.sqrt(mean_squared_error(y_true.flatten(), y_pred.flatten()))
-
-
-def eval_mdape(y_true, y_pred):
-    return np.median(np.abs((y_true.flatten() - y_pred.flatten()) / y_true.flatten())) * 100
-
-
-def eval_r2(y_true, y_pred):
-    return r2_score(y_true.flatten(), y_pred.flatten())
 
 
 def run_xgboost(X_train, y_train, X_test, y_test, scaler):
@@ -66,18 +40,21 @@ def run_xgboost(X_train, y_train, X_test, y_test, scaler):
     return mae_train, r2_train, mae_test, r2_test
 
 
-def run_linear_regression(X_train, y_train, X_test, y_test, scaler):
+def run_linear_regression(X_trains, y_trains, X_test, y_test, scaler):
     model = linear_model.LinearRegression()
-    model.fit(X_train, y_train)
-    train_results = model.predict(X_train)
-    mae_train = 1
-    r2_train = 1
-    mae_train, r2_train = evaluate(
-        scaler, y_train, train_results, "linear_regression", "train")
+    for i in range(0, len(X_trains)):
+        x_train = X_trains[i]
+        y_train = y_trains[i]
+        model.fit(x_train, y_train)
+        train_results = model.predict(x_train)
+        # mae_train, r2_train = evaluate(
+        #     scaler, y_train, train_results, "linear_regression", "train")
 
     test_results = model.predict(X_test)
     mae_test, r2_test = evaluate(
         scaler, y_test, test_results, 'linear_regression', 'test')
+    mae_train = 1
+    r2_train = 1
     return mae_train, r2_train, mae_test, r2_test
 
 
@@ -404,15 +381,11 @@ def evaluate(scaler, gt, pred, algo, phase_name):
     gt_ori = gt
 
     mae = mean_absolute_error(gt_ori, pred_ori)
-    mape = eval_mape(gt_ori, pred_ori)
-    print(mape)
-
-    # mdape = eval_mdape(gt_ori, pred_ori)
     r2 = r2_score(gt_ori, pred_ori)
-    # plt.plot(gt_ori, label="gt")
-    # plt.plot(pred_ori, label="pred")
-    # plt.legend()
-    # plt.savefig(os.path.join(
-    #     output_log, "pred_{}_{}.png".format(algo, phase_name)))
-    # plt.close()
+    plt.plot(gt_ori, label="gt")
+    plt.plot(pred_ori, label="pred")
+    plt.legend()
+    plt.savefig(os.path.join(
+        output_log, "pred_{}_{}.png".format(algo, phase_name)))
+    plt.close()
     return mae, r2

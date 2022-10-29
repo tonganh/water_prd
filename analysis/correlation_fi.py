@@ -1,9 +1,10 @@
+import numpy as np
 import pandas as pd
 from matplotlib import pyplot as plt
 import matplotlib.axes as ax
 import seaborn as sns
 sns.set()
-import numpy as np
+
 
 def heatmap(x, y, **kwargs):
     if 'color' in kwargs:
@@ -15,21 +16,25 @@ def heatmap(x, y, **kwargs):
         palette = kwargs['palette']
         n_colors = len(palette)
     else:
-        n_colors = 256 # Use 256 colors for the diverging color palette
-        palette = sns.color_palette("Blues", n_colors) 
+        n_colors = 256  # Use 256 colors for the diverging color palette
+        palette = sns.color_palette("Blues", n_colors)
 
     if 'color_range' in kwargs:
         color_min, color_max = kwargs['color_range']
     else:
-        color_min, color_max = min(color), max(color) # Range of values that will be mapped to the palette, i.e. min and max possible correlation
+        # Range of values that will be mapped to the palette, i.e. min and max possible correlation
+        color_min, color_max = min(color), max(color)
 
     def value_to_color(val):
         if color_min == color_max:
             return palette[-1]
         else:
-            val_position = float((val - color_min)) / (color_max - color_min) # position of value in the input range, relative to the length of the input range
-            val_position = min(max(val_position, 0), 1) # bound the position betwen 0 and 1
-            ind = int(val_position * (n_colors - 1)) # target index in the color palette
+            # position of value in the input range, relative to the length of the input range
+            val_position = float((val - color_min)) / (color_max - color_min)
+            # bound the position betwen 0 and 1
+            val_position = min(max(val_position, 0), 1)
+            # target index in the color palette
+            ind = int(val_position * (n_colors - 1))
             return palette[ind]
 
     if 'size' in kwargs:
@@ -48,41 +53,47 @@ def heatmap(x, y, **kwargs):
         if size_min == size_max:
             return 1 * size_scale
         else:
-            val_position = (val - size_min) * 0.99 / (size_max - size_min) + 0.01 # position of value in the input range, relative to the length of the input range
-            val_position = min(max(val_position, 0), 1) # bound the position betwen 0 and 1
+            # position of value in the input range, relative to the length of the input range
+            val_position = (val - size_min) * 0.99 / \
+                (size_max - size_min) + 0.01
+            # bound the position betwen 0 and 1
+            val_position = min(max(val_position, 0), 1)
             return val_position * size_scale
-    if 'x_order' in kwargs: 
+    if 'x_order' in kwargs:
         x_names = [t for t in kwargs['x_order']]
     else:
         x_names = [t for t in sorted(set([v for v in x]))]
-    x_to_num = {p[1]:p[0] for p in enumerate(x_names)}
+    x_to_num = {p[1]: p[0] for p in enumerate(x_names)}
 
-    if 'y_order' in kwargs: 
+    if 'y_order' in kwargs:
         y_names = [t for t in kwargs['y_order']]
     else:
         y_names = [t for t in sorted(set([v for v in y]))]
-    y_to_num = {p[1]:p[0] for p in enumerate(y_names)}
+    y_to_num = {p[1]: p[0] for p in enumerate(y_names)}
 
-    plot_grid = plt.GridSpec(1, 15, hspace=0.2, wspace=0.1) # Setup a 1x10 grid
-    ax = plt.subplot(plot_grid[:,:-1]) # Use the left 14/15ths of the grid for the main plot
+    plot_grid = plt.GridSpec(
+        1, 15, hspace=0.2, wspace=0.1)  # Setup a 1x10 grid
+    # Use the left 14/15ths of the grid for the main plot
+    ax = plt.subplot(plot_grid[:, :-1])
 
     marker = kwargs.get('marker', 's')
 
-    kwargs_pass_on = {k:v for k,v in kwargs.items() if k not in [
-         'color', 'palette', 'color_range', 'size', 'size_range', 'size_scale', 'marker', 'x_order', 'y_order'
+    kwargs_pass_on = {k: v for k, v in kwargs.items() if k not in [
+        'color', 'palette', 'color_range', 'size', 'size_range', 'size_scale', 'marker', 'x_order', 'y_order'
     ]}
 
     ax.scatter(
         x=[x_to_num[v] for v in x],
         y=[y_to_num[v] for v in y],
         marker=marker,
-        s=[value_to_size(v) for v in size], 
+        s=[value_to_size(v) for v in size],
         c=[value_to_color(v) for v in color],
         **kwargs_pass_on
     )
-    ax.set_xticks([v for k,v in x_to_num.items()])
-    ax.set_xticklabels([k for k in x_to_num], rotation=45, horizontalalignment='right')
-    ax.set_yticks([v for k,v in y_to_num.items()])
+    ax.set_xticks([v for k, v in x_to_num.items()])
+    ax.set_xticklabels([k for k in x_to_num], rotation=45,
+                       horizontalalignment='right')
+    ax.set_yticks([v for k, v in y_to_num.items()])
     ax.set_yticklabels([k for k in y_to_num])
 
     ax.grid(False, 'major')
@@ -96,26 +107,30 @@ def heatmap(x, y, **kwargs):
 
     # Add color legend on the right side of the plot
     if color_min < color_max:
-        ax = plt.subplot(plot_grid[:,-1]) # Use the rightmost column of the plot
+        # Use the rightmost column of the plot
+        ax = plt.subplot(plot_grid[:, -1])
 
-        col_x = [0]*len(palette) # Fixed x coordinate for the bars
-        bar_y=np.linspace(color_min, color_max, n_colors) # y coordinates for each of the n_colors bars
+        col_x = [0]*len(palette)  # Fixed x coordinate for the bars
+        # y coordinates for each of the n_colors bars
+        bar_y = np.linspace(color_min, color_max, n_colors)
 
         bar_height = bar_y[1] - bar_y[0]
         ax.barh(
             y=bar_y,
-            width=[5]*len(palette), # Make bars 5 units wide
-            left=col_x, # Make bars start at 0
+            width=[5]*len(palette),  # Make bars 5 units wide
+            left=col_x,  # Make bars start at 0
             height=bar_height,
             color=palette,
             linewidth=0
         )
-        ax.set_xlim(1, 2) # Bars are going from 0 to 5, so lets crop the plot somewhere in the middle
-        ax.grid(False) # Hide grid
-        ax.set_facecolor('white') # Make background white
-        ax.set_xticks([]) # Remove horizontal ticks
-        ax.set_yticks(np.linspace(min(bar_y), max(bar_y), 3)) # Show vertical ticks for min, middle and max
-        ax.yaxis.tick_right() # Show vertical ticks on the right 
+        # Bars are going from 0 to 5, so lets crop the plot somewhere in the middle
+        ax.set_xlim(1, 2)
+        ax.grid(False)  # Hide grid
+        ax.set_facecolor('white')  # Make background white
+        ax.set_xticks([])  # Remove horizontal ticks
+        # Show vertical ticks for min, middle and max
+        ax.set_yticks(np.linspace(min(bar_y), max(bar_y), 3))
+        ax.yaxis.tick_right()  # Show vertical ticks on the right
 
 
 def corrplot(data, size_scale=500, marker='s'):
@@ -125,7 +140,7 @@ def corrplot(data, size_scale=500, marker='s'):
         corr['x'], corr['y'],
         color=corr['value'], color_range=[-1, 1],
         # palette=sns.diverging_palette(20, 220, n=256),
-        size=corr['value'].abs(), size_range=[0,1],
+        size=corr['value'].abs(), size_range=[0, 1],
         marker=marker,
         x_order=data.columns,
         y_order=data.columns[::-1],
@@ -134,7 +149,13 @@ def corrplot(data, size_scale=500, marker='s'):
 
 
 # dataset_frame = get_data_dataframe()
-data = pd.read_csv('../data/clo.csv', usecols=["Water Temp.","pH","DO","DOC","BOD5","CODMn","DTN","DTP","EC","SS","UV254","E250/E365","E350/E400","S275-295","S350-400","SR","FI450","FI470","BIX","HIX","C1","C2","C3","D1","D2","D3","D4","Chl-a"])
+# data = pd.read_csv('../data/clo.csv', usecols=["Water Temp.","pH","DO","DOC","BOD5","CODMn","DTN","DTP","EC","SS","UV254","E250/E365","E350/E400","S275-295","S350-400","SR","FI450","FI470","BIX","HIX","C1","C2","C3","D1","D2","D3","D4","Chl-a"])
+# plt.figure(figsize=(10, 10))
+# corrplot(data.corr())
+# plt.savefig('heatmap.png')
+
+data = pd.read_csv('../data/clo.csv', usecols=[
+    "FI450", "FI470", "BIX", "HIX", "C1", "C2", "C3", "D1", "D2", "D3", "D4", "Chl-a"])
 plt.figure(figsize=(10, 10))
 corrplot(data.corr())
-plt.savefig('heatmap.png')
+plt.savefig('heatmap_c_fluorence.png')

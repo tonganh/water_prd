@@ -1,3 +1,2 @@
-model,water,water_optics,uv,uv_optics,fluorescence,fluorescence_optics,all,all_optics,optics
-xgboost,0.6419837189540742,0.6098600038397368,-4.0195299599469445,-4.355955164433386,-0.9274968041187313,-0.28828488012849673,0.5528067938524179,0.5792695844072138,-0.28292645413626727
-stacking,0.5422998475839151,0.5179424344641528,-0.3110440202713056,-0.5362578352976641,-0.29192969881815967,-0.1496030544668987,0.4801408272903436,0.4945629642385815,-0.1682813961051468
+model,water,water_uv,water_fluorence,water_optics_c1_c2_c3,water_optics_d1_d2_d3_d4,water_get_some_uv,water_some_fluorence,water_some_c1_c2_c3,water_some_c1_c2_c3_fluorence,water_some_d1_d2_d3_d4_fluorence,some_water_uv
+linear_regression,,,,,,,,,,,
