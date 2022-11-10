@@ -56,12 +56,14 @@ def run_xgboost(X_train, y_train, X_test, y_test, scaler):
     model.fit(X_train, y_train, eval_metric="mae", verbose=False)
 
     train_results = model.predict(X_train)
+    mae_train = 1
+    r2_train = 1
     mae_train, r2_train = evaluate(
         scaler, y_train, train_results, "xgboost", "train")
 
     test_results = model.predict(X_test)
     mae_test, r2_test = evaluate(
-        scaler, y_test, test_results, "xgboost", "test")
+        scaler, y_test, test_results, 'xgboost', 'test')
     return mae_train, r2_train, mae_test, r2_test
 
 
@@ -413,4 +415,4 @@ def evaluate(scaler, gt, pred, algo, phase_name):
     # plt.savefig(os.path.join(
     #     output_log, "pred_{}_{}.png".format(algo, phase_name)))
     # plt.close()
-    return mae, mdape
+    return mae, r2

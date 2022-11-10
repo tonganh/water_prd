@@ -14,6 +14,7 @@ from sklearn import kernel_ridge
 from sklearn import svm
 from sklearn import neighbors
 from sklearn import tree
+from sklearn.metrics import mean_squared_error
 
 
 def seed_everything(seed: int):
@@ -26,21 +27,27 @@ def seed_everything(seed: int):
     torch.backends.cudnn.benchmark = True
 
 
-def run_xgboost(X_train, y_train, X_test, y_test, scaler):
+def run_xgboost(X_trains, y_trains, X_test, y_test, scaler, case='1'):
     model = xgbmodel(objective='reg:squarederror')
-    model.fit(X_train, y_train, eval_metric="mae", verbose=False)
-
-    train_results = model.predict(X_train)
-    mae_train, r2_train = evaluate(
-        scaler, y_train, train_results, "xgboost", "train")
+    for i in range(0, len(X_trains)):
+        x_train = X_trains[i]
+        y_train = y_trains[i]
+        model.fit(x_train, y_train)
+        train_results = model.predict(x_train)
+        # mae_train, r2_train = evaluate(
+        #     scaler, y_train, train_results, "linear_regression", "train")
+    mae_train = 1
+    r2_train = 1
 
     test_results = model.predict(X_test)
     mae_test, r2_test = evaluate(
-        scaler, y_test, test_results, "xgboost", "test")
+        scaler, y_test, test_results, "xgboost", "test", case)
+    # r2_test = mean_squared_error(y_test, test_results)
+    # r2_test = mae_test
     return mae_train, r2_train, mae_test, r2_test
 
 
-def run_linear_regression(X_trains, y_trains, X_test, y_test, scaler):
+def run_linear_regression(X_trains, y_trains, X_test, y_test, scaler, case='1'):
     model = linear_model.LinearRegression()
     for i in range(0, len(X_trains)):
         x_train = X_trains[i]
@@ -52,9 +59,11 @@ def run_linear_regression(X_trains, y_trains, X_test, y_test, scaler):
 
     test_results = model.predict(X_test)
     mae_test, r2_test = evaluate(
-        scaler, y_test, test_results, 'linear_regression', 'test')
+        scaler, y_test, test_results, 'linear_regression', 'test', case)
     mae_train = 1
     r2_train = 1
+    # r2_test = mean_squared_error(y_test, test_results)
+    # r2_test = mae_test
     return mae_train, r2_train, mae_test, r2_test
 
 
@@ -366,7 +375,7 @@ def split_data(dataset, train_per=0.8, valid_per=0.0):
     return X_train, y_train, X_valid, y_valid, X_test, y_test, scaler
 
 
-def evaluate(scaler, gt, pred, algo, phase_name):
+def evaluate(scaler, gt, pred, algo, phase_name, case='1'):
     output_log = os.path.join("log", "visualization")
     if not os.path.exists(output_log):
         os.makedirs(output_log)
@@ -386,6 +395,7 @@ def evaluate(scaler, gt, pred, algo, phase_name):
     plt.plot(pred_ori, label="pred")
     plt.legend()
     plt.savefig(os.path.join(
-        output_log, "pred_{}_{}.png".format(algo, phase_name)))
+        output_log, "pred_{}_{}_{}.png".format(algo, phase_name, case)))
     plt.close()
+    # mae = mean_squared_error(gt, pred)
     return mae, r2
