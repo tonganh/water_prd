@@ -1,3 +1,4 @@
-model,water_some_fluorence_uv
-linear_regression,0.8108969834860833
-xgboost,0.7878594940061088
+model,water_1
+linear_regression,0.728468706918481
+xgboost,0.7579160787917478
+stacking,0.7653936655215233

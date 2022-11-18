@@ -42,9 +42,9 @@ def run_xgboost(X_trains, y_trains, X_test, y_test, scaler, case='1'):
     test_results = model.predict(X_test)
     mae_test, r2_test = evaluate(
         scaler, y_test, test_results, "xgboost", "test", case)
-    # r2_test = mean_squared_error(y_test, test_results)
     # r2_test = mae_test
-    return mae_train, r2_train, mae_test, r2_test
+    mse_test = mean_squared_error(y_test, test_results)
+    return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
 def run_linear_regression(X_trains, y_trains, X_test, y_test, scaler, case='1'):
@@ -61,10 +61,11 @@ def run_linear_regression(X_trains, y_trains, X_test, y_test, scaler, case='1'):
     mae_test, r2_test = evaluate(
         scaler, y_test, test_results, 'linear_regression', 'test', case)
     mae_train = 1
+    mse_test = mean_squared_error(y_test, test_results)
     r2_train = 1
-    # r2_test = mean_squared_error(y_test, test_results)
     # r2_test = mae_test
-    return mae_train, r2_train, mae_test, r2_test
+    # r2_test = mean_squared_error(y_test, test_results)
+    return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
 def run_ridge_regression(X_train, y_train, X_test, y_test, scaler):
@@ -291,7 +292,7 @@ def run_deeplearning(X_train, y_train, X_test, y_test, scaler):
 #     return mae_train, r2_train, mae_test, r2_test
 
 
-def run_stacking(X_train, y_train, X_test, y_test, scaler):
+def run_stacking(X_trains, y_trains, X_test, y_test, scaler):
     from sklearn.linear_model import ElasticNet, Lasso
     from sklearn.ensemble import RandomForestRegressor,  GradientBoostingRegressor
     from sklearn.base import BaseEstimator, TransformerMixin, RegressorMixin, clone
@@ -343,17 +344,30 @@ def run_stacking(X_train, y_train, X_test, y_test, scaler):
 
     models = StackingAveragedModels(base_models=(ENet, GBoost, model_rf),
                                     meta_model=lasso)
+    for i in range(0, len(X_trains)):
+        x_train = X_trains[i]
+        y_train = y_trains[i]
+        models.fit(x_train, y_train)
+        train_results = models.predict(x_train)
 
-    models.fit(X_train, y_train)
+    # models.fit(X_train, y_train)
 
-    train_results = models.predict(X_train)
-    mae_train, r2_train = evaluate(
-        scaler, y_train, train_results, "stacking_v2", "train")
+    # train_results = models.predict(X_train)
+    train_results = 1
+
+    # mae_train, r2_train = evaluate(
+    #     scaler, y_train, train_results, "stacking_v2", "train")
+    mae_train = 1
+    r2_train = 1
 
     test_results = models.predict(X_test)
     mae_test, r2_test = evaluate(
         scaler, y_test, test_results, "stacking_v2", "test")
-    return mae_train, r2_train, mae_test, r2_test
+    mse_test = mean_squared_error(y_test, test_results)
+    r2_train = 1
+    # r2_test = mae_test
+    # r2_test = mean_squared_error(y_test, test_results)
+    return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
 def split_data(dataset, train_per=0.8, valid_per=0.0):

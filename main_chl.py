@@ -65,7 +65,7 @@ if __name__ == "__main__":
     #           "kernel_ridge",  "KNeighbor_regression", "PLSRegression",  "stacking"]
     # models = ["linear_regression",  "bayesian_ridge_regression",
     #           "stacking"]
-    models = ["linear_regression", "xgboost"]
+    models = ["linear_regression"]
     print(f'Total model using: {len(models)}')
     final_result = pd.DataFrame()
     final_result["model"] = models
@@ -105,10 +105,10 @@ if __name__ == "__main__":
         for model in results:
             r2_test.append(np.mean(results[model]["r2_test"]))
         final_result[case] = r2_test
-        # if case != 'water':
-        #     test = (r2_test / final_result['water'])*100
-        #     print(f'{test}')
-        #     case_add_percentage = case + '_diff'
-        #     final_result[case_add_percentage] = f'{round(float(test),2)}%'
+        if case != 'water':
+            test = (r2_test / final_result['water'])*100
+            print(f'{test}')
+            case_add_percentage = case + '_diff'
+            final_result[case_add_percentage] = f'{round(float(test),2)}%'
 
     final_result.to_csv("final_result.csv", index=False)
