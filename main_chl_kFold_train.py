@@ -64,7 +64,14 @@ if __name__ == "__main__":
     # }
     list_features = {
         # "water": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "Chl-a"],
-        "water_1": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "DTN", "DTP", "EC", "SS", "C1", "C2", "C3", "Chl-a"],
+
+        # "water_1": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "C1", "C2", "C3", "EC", "SS",  "FI470", "BIX", "HIX", "Chl-a"],
+        # # !replace DTP and DTN
+        # "water_replace_DTN": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "EC", "SS", "FI470", "BIX", "HIX", "Chl-a"],
+        # !replace BOD with optics
+        "water_replace_BOD": ["Water Temp.", "pH", "DO", "DOC", "CODMn", "DTN", "DTP", "EC", "SS", "FI470", "BIX", "HIX", "C2", "Chl-a"]
+        # # !replace DOC with optics
+        # "water_replace_DOC": ["Water Temp.", "pH", "DO", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "FI470", "BIX", "HIX", "C2", "Chl-a"]
         # "water_1_uv": ["Water Temp.", "pH",  "BOD5", "CODMn",  "EC", "SS", "Chl-a"],
         # "water_uv": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS","C1","C2","C3", "Chl-a"],
         # "water_test_fluorence": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTP", "FI450", "FI470", "BIX", "HIX", "Chl-a"],
@@ -96,7 +103,10 @@ if __name__ == "__main__":
     }
     # models = ["linear_regression", "ridge_regression",
     #           "lasso_regression", "lasso_lars_regression", "bayesian_ridge_regression", "generalized_linear_regression", "kernel_ridge", "svm_regression", "KNeighbor_regression", "PLSRegression", "decision_tree_regression", "stacking"]
-    models = ["linear_regression", "xgboost", "stacking"]
+    # !TODO: model best for result
+    # models = ["linear_regression", "stacking"]
+    models = ["linear_regression", "stacking",  "xgboost",
+              "ridge_regression",  "bayesian_ridge_regression"]
     print(f'Total model using: {len(models)}')
     use_kfold = True
     range_using = 20
@@ -184,7 +194,7 @@ if __name__ == "__main__":
         # print(
         #     f'Model name: {model_name}  - min: {min_in_model} avg: {avg_value_model} max:{max_in_model}')
         avg_value_model = round(avg_value_model, 2)
-        print(f'Model name: {model_name} avg: {avg_value_model}')
+        mean_r2 = avg_value_model
 
         count_value_in_model = 0
         for each_couple_value in test_list:
@@ -192,7 +202,8 @@ if __name__ == "__main__":
             count_value_in_model += current_model_value['mae_test']
         avg_value_model = count_value_in_model/range_using
         avg_value_model = round(avg_value_model, 2)
-        print(f'Model name: {model_name} mean_mae: {avg_value_model}')
+        # print(f'Model name: {model_name} mean_mae: {avg_value_model}')
+        mean_mae = avg_value_model
 
         count_value_in_model = 0
         for each_couple_value in test_list:
@@ -200,4 +211,6 @@ if __name__ == "__main__":
             count_value_in_model += current_model_value['mse_test']
         avg_value_model = count_value_in_model/range_using
         avg_value_model = round(avg_value_model, 2)
-        print(f'Model name: {model_name} mean_mse: {avg_value_model}')
+        mean_mse = avg_value_model
+        # print(f'Model name: {model_name} mean_mse: {avg_value_model}')
+        print(f'{model_name} - {mean_r2} - {mean_mae} - {mean_mse}')

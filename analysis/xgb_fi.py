@@ -73,8 +73,10 @@ if __name__ == "__main__":
     # print(cols)
     # feature_importances_xgboost(dataset, cols, target)
 
-    dataset = pd.read_csv('../data/clo.csv', usecols=["Water Temp.","pH","DO","DOC","BOD5","CODMn","DTN","DTP","EC","SS","UV254","E250/E365","E350/E400","S275-295","S350-400","SR","FI450","FI470","BIX","HIX","C1","C2","C3","D1","D2","D3","D4","Chl-a"])
+    dataset = pd.read_csv('../data/clo.csv', usecols=["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS",
+                          "UV254", "E250/E365", "E350/E400", "S275-295", "S350-400", "SR", "FI450", "FI470", "BIX", "HIX", "C1", "C2", "C3", "Chl-a"])
     dataset = dataset.dropna()
     cols = list(dataset.columns)
+    print(cols)
     target = "Chl-a"
-    feature_importances_xgboost(dataset, cols, target)
+    feature_importances_xgboost(dataset, cols, target, train_per=0.8)

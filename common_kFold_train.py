@@ -40,10 +40,9 @@ def run_xgboost(X_trains, y_trains, X_test, y_test, scaler, case='1'):
     r2_train = 1
 
     test_results = model.predict(X_test)
-    mae_test, r2_test = evaluate(
+    mae_test, r2_test, mse_test = evaluate(
         scaler, y_test, test_results, "xgboost", "test", case)
     # r2_test = mae_test
-    mse_test = mean_squared_error(y_test, test_results)
     return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
@@ -58,70 +57,88 @@ def run_linear_regression(X_trains, y_trains, X_test, y_test, scaler, case='1'):
         #     scaler, y_train, train_results, "linear_regression", "train")
 
     test_results = model.predict(X_test)
-    mae_test, r2_test = evaluate(
+    mae_test, r2_test, mse_test = evaluate(
         scaler, y_test, test_results, 'linear_regression', 'test', case)
     mae_train = 1
-    mse_test = mean_squared_error(y_test, test_results)
     r2_train = 1
     # r2_test = mae_test
     # r2_test = mean_squared_error(y_test, test_results)
     return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
-def run_ridge_regression(X_train, y_train, X_test, y_test, scaler):
+def run_ridge_regression(X_trains, y_trains, X_test, y_test, scaler):
     model = linear_model.Ridge(alpha=.5)
-    model.fit(X_train, y_train)
     name_model = 'ridge_regression'
-    train_results = model.predict(X_train)
-    mae_train, r2_train = evaluate(
-        scaler, y_train, train_results, name_model, "train")
-
+    for i in range(0, len(X_trains)):
+        x_train = X_trains[i]
+        y_train = y_trains[i]
+        model.fit(x_train, y_train)
+        train_results = model.predict(x_train)
+        # mae_train, r2_train = evaluate(
+        #     scaler, y_train, train_results, "linear_regression", "train")
+    mae_train = 1
+    r2_train = 1
     test_results = model.predict(X_test)
-    mae_test, r2_test = evaluate(
+    mae_test, r2_test, mse_test = evaluate(
         scaler, y_test, test_results, name_model, 'test')
-    return mae_train, r2_train, mae_test, r2_test
+    return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
-def run_lasso_regression(X_train, y_train, X_test, y_test, scaler):
-    model = linear_model.Lasso(alpha=.1)
-    model.fit(X_train, y_train)
+def run_lasso_regression(X_trains, y_trains, X_test, y_test, scaler):
     name_model = 'lasso_regression'
-    train_results = model.predict(X_train)
-    mae_train, r2_train = evaluate(
-        scaler, y_train, train_results, name_model, "train")
+    model = linear_model.Lasso(alpha=.1)
+    for i in range(0, len(X_trains)):
+        x_train = X_trains[i]
+        y_train = y_trains[i]
+        model.fit(x_train, y_train)
+        train_results = model.predict(x_train)
+        # mae_train, r2_train = evaluate(
+        #     scaler, y_train, train_results, "linear_regression", "train")
+    mae_train = 1
+    r2_train = 1
 
     test_results = model.predict(X_test)
-    mae_test, r2_test = evaluate(
+    mae_test, r2_test, mse_test = evaluate(
         scaler, y_test, test_results, name_model, 'test')
-    return mae_train, r2_train, mae_test, r2_test
+    return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
-def run_lasso_lars_regression(X_train, y_train, X_test, y_test, scaler):
-    model = linear_model.LassoLars(alpha=.1, normalize=False)
-    model.fit(X_train, y_train)
+def run_lasso_lars_regression(X_trains, y_trains, X_test, y_test, scaler):
     name_model = 'lasso_lars_regression'
-    train_results = model.predict(X_train)
-    mae_train, r2_train = evaluate(
-        scaler, y_train, train_results, name_model, "train")
+    model = linear_model.LassoLars(alpha=.1, normalize=False)
+    for i in range(0, len(X_trains)):
+        x_train = X_trains[i]
+        y_train = y_trains[i]
+        model.fit(x_train, y_train)
+        train_results = model.predict(x_train)
+        # mae_train, r2_train = evaluate(
+        #     scaler, y_train, train_results, "linear_regression", "train")
+    mae_train = 1
+    r2_train = 1
 
     test_results = model.predict(X_test)
-    mae_test, r2_test = evaluate(
+    mae_test, r2_test, mse_test = evaluate(
         scaler, y_test, test_results, name_model, 'test')
-    return mae_train, r2_train, mae_test, r2_test
+    return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
-def run_bayesian_ridge_regression(X_train, y_train, X_test, y_test, scaler):
-    model = linear_model.BayesianRidge()
-    model.fit(X_train, y_train)
+def run_bayesian_ridge_regression(X_trains, y_trains, X_test, y_test, scaler):
     name_model = 'bayesian_ridge_regression'
-    train_results = model.predict(X_train)
-    mae_train, r2_train = evaluate(
-        scaler, y_train, train_results, name_model, "train")
+    model = linear_model.BayesianRidge()
+    for i in range(0, len(X_trains)):
+        x_train = X_trains[i]
+        y_train = y_trains[i]
+        model.fit(x_train, y_train)
+        train_results = model.predict(x_train)
+        # mae_train, r2_train = evaluate(
+        #     scaler, y_train, train_results, "linear_regression", "train")
+    mae_train = 1
+    r2_train = 1
 
     test_results = model.predict(X_test)
-    mae_test, r2_test = evaluate(
+    mae_test, r2_test, mse_test = evaluate(
         scaler, y_test, test_results, name_model, 'test')
-    return mae_train, r2_train, mae_test, r2_test
+    return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
 def run_generalized_linear_regression(X_train, y_train, X_test, y_test, scaler):
@@ -361,9 +378,8 @@ def run_stacking(X_trains, y_trains, X_test, y_test, scaler):
     r2_train = 1
 
     test_results = models.predict(X_test)
-    mae_test, r2_test = evaluate(
+    mae_test, r2_test, mse_test = evaluate(
         scaler, y_test, test_results, "stacking_v2", "test")
-    mse_test = mean_squared_error(y_test, test_results)
     r2_train = 1
     # r2_test = mae_test
     # r2_test = mean_squared_error(y_test, test_results)
@@ -395,13 +411,12 @@ def evaluate(scaler, gt, pred, algo, phase_name, case='1'):
         os.makedirs(output_log)
     # gt = scaler.inverse_transform(gt)
     # pred = scaler.inverse_transform(pred)
-    # data_predicted = scaler[:,i]
-    # pred_ori = pred - scaler.min_[-1] # aqmesh
-    # pred_ori /= scaler.scale_[-1] # aqmesh
-    # gt_ori = gt - scaler.min_[-1] # aqmesh
-    # gt_ori /= scaler.scale_[-1] # aqmesh
-    pred_ori = pred
-    gt_ori = gt
+    pred_ori = pred - scaler.min_[-1]  # aqmesh
+    pred_ori /= scaler.scale_[-1]  # aqmesh
+    gt_ori = gt - scaler.min_[-1]  # aqmesh
+    gt_ori /= scaler.scale_[-1]  # aqmesh
+    # pred_ori = pred
+    # gt_ori = gt
 
     mae = mean_absolute_error(gt_ori, pred_ori)
     r2 = r2_score(gt_ori, pred_ori)
@@ -412,4 +427,5 @@ def evaluate(scaler, gt, pred, algo, phase_name, case='1'):
         output_log, "pred_{}_{}_{}.png".format(algo, phase_name, case)))
     plt.close()
     # mae = mean_squared_error(gt, pred)
-    return mae, r2
+    mse = mean_squared_error(gt_ori, pred_ori)
+    return mae, r2, mse
