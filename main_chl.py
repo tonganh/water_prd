@@ -37,18 +37,18 @@ if __name__ == "__main__":
     #                  }
     list_features = {
         "water": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "Chl-a"],
-        "water_uv": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "UV254", "E250/E365", "E350/E400", "S275-295", "S350-400", "SR", "Chl-a"],
-        "some_water_uv": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "EC", "SS",  "UV254", "E250/E365", "E350/E400", "S275-295", "S350-400", "SR", "Chl-a"],
-        "water_get_some_uv": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "S275-295", "S350-400", "UV254", "Chl-a"],
-        "water_fluorence": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "FI450", "FI470", "BIX", "HIX", "Chl-a"],
-        "water_some_fluorence": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS",  "HIX", "Chl-a"],
-        "water_optics_c1_c2_c3": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "C1", "C2", "C3",  "Chl-a"],
-        "water_some_c1_c2_c3": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "C1", "C2",  "Chl-a"],
-        "some_water_c1_c2_c3": ["Water Temp.", "DO", "DOC", "BOD5", "CODMn",  "EC", "SS",  "C1", "C2", "C3", "Chl-a"],
-        "water_some_c1_c2_c3_fluorence": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "FI450", "FI470", "HIX", "C1", "C2", "C3", "Chl-a"],
-        "water_optics_d1_d2_d3_d4": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "D1", "D2", "D3", "D4", "Chl-a"],
-        "water_some_d1_d2_d3_d4_fluorence": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "FI450", "FI470", "BIX", "HIX", "D1", "D2", "D3", "D4", "Chl-a"],
-        "some_water_d1_d2_d3_d4": ["Water Temp.", "DO", "DOC", "BOD5", "CODMn",  "EC", "SS",  "D1", "D2", "D3",  "Chl-a"],
+        # "water_uv": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "UV254", "E250/E365", "E350/E400", "S275-295", "S350-400", "SR", "Chl-a"],
+        # "some_water_uv": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "EC", "SS",  "UV254", "E250/E365", "E350/E400", "S275-295", "S350-400", "SR", "Chl-a"],
+        # "water_get_some_uv": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "S275-295", "S350-400", "UV254", "Chl-a"],
+        # "water_fluorence": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "FI450", "FI470", "BIX", "HIX", "Chl-a"],
+        # "water_some_fluorence": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS",  "HIX", "Chl-a"],
+        # "water_optics_c1_c2_c3": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "C1", "C2", "C3",  "Chl-a"],
+        # "water_some_c1_c2_c3": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "C1", "C2",  "Chl-a"],
+        # "some_water_c1_c2_c3": ["Water Temp.", "DO", "DOC", "BOD5", "CODMn",  "EC", "SS",  "C1", "C2", "C3", "Chl-a"],
+        # "water_some_c1_c2_c3_fluorence": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "FI450", "FI470", "HIX", "C1", "C2", "C3", "Chl-a"],
+        # "water_optics_d1_d2_d3_d4": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "D1", "D2", "D3", "D4", "Chl-a"],
+        # "water_some_d1_d2_d3_d4_fluorence": ["Water Temp.", "pH", "DO", "DOC", "BOD5", "CODMn", "DTN", "DTP", "EC", "SS", "FI450", "FI470", "BIX", "HIX", "D1", "D2", "D3", "D4", "Chl-a"],
+        # "some_water_d1_d2_d3_d4": ["Water Temp.", "DO", "DOC", "BOD5", "CODMn",  "EC", "SS",  "D1", "D2", "D3",  "Chl-a"],
         # "uv": ["UV254", "E250/E365", "E350/E400", "S275-295", "SR", "Chl-a"],
         # "uv_optics": ["UV254", "E250/E365", "E350/E400", "S275-295", "SR", "D1", "D2", "D3", "Chl-a"],
         # "fluorescence": ["FI450", "FI470", "BIX", "HIX", "Chl-a"],
@@ -65,7 +65,7 @@ if __name__ == "__main__":
     #           "kernel_ridge",  "KNeighbor_regression", "PLSRegression",  "stacking"]
     # models = ["linear_regression",  "bayesian_ridge_regression",
     #           "stacking"]
-    models = ["linear_regression"]
+    models = ["deeplearning"]
     print(f'Total model using: {len(models)}')
     final_result = pd.DataFrame()
     final_result["model"] = models
