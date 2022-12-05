@@ -2,7 +2,7 @@ import pdb
 from pprint import pprint
 from sklearn.metrics import mean_absolute_error, r2_score, mean_squared_error
 import matplotlib.pyplot as plt
-from xgboost import XGBRegressor as xgbmodel
+# from xgboost import XGBRegressor as xgbmodel
 import numpy as np
 import random
 import os
@@ -51,20 +51,20 @@ def eval_r2(y_true, y_pred):
     return r2_score(y_true.flatten(), y_pred.flatten())
 
 
-def run_xgboost(X_train, y_train, X_test, y_test, scaler):
-    model = xgbmodel(objective='reg:squarederror')
-    model.fit(X_train, y_train, eval_metric="mae", verbose=False)
+# def run_xgboost(X_train, y_train, X_test, y_test, scaler):
+#     model = xgbmodel(objective='reg:squarederror')
+#     model.fit(X_train, y_train, eval_metric="mae", verbose=False)
 
-    train_results = model.predict(X_train)
-    mae_train = 1
-    r2_train = 1
-    mae_train, r2_train = evaluate(
-        scaler, y_train, train_results, "xgboost", "train")
+#     train_results = model.predict(X_train)
+#     mae_train = 1
+#     r2_train = 1
+#     mae_train, r2_train = evaluate(
+#         scaler, y_train, train_results, "xgboost", "train")
 
-    test_results = model.predict(X_test)
-    mae_test, r2_test = evaluate(
-        scaler, y_test, test_results, 'xgboost', 'test')
-    return mae_train, r2_train, mae_test, r2_test
+#     test_results = model.predict(X_test)
+#     mae_test, r2_test = evaluate(
+#         scaler, y_test, test_results, 'xgboost', 'test')
+#     return mae_train, r2_train, mae_test, r2_test
 
 
 def run_linear_regression(X_train, y_train, X_test, y_test, scaler):

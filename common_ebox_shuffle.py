@@ -1,6 +1,6 @@
 from sklearn.metrics import mean_absolute_error, r2_score
 import matplotlib.pyplot as plt
-from xgboost import XGBRegressor as xgbmodel
+# from xgboost import XGBRegressor as xgbmodel
 import numpy as np
 import random
 import os
@@ -16,6 +16,8 @@ from sklearn import neighbors
 from sklearn import tree
 from sklearn.metrics import mean_squared_error
 
+from torch.utils.data import DataLoader, Dataset
+
 
 def seed_everything(seed: int):
     random.seed(seed)
@@ -27,23 +29,23 @@ def seed_everything(seed: int):
     torch.backends.cudnn.benchmark = True
 
 
-def run_xgboost(X_trains, y_trains, X_test, y_test, scaler, case='1'):
-    model = xgbmodel(objective='reg:squarederror')
-    for i in range(0, len(X_trains)):
-        x_train = X_trains[i]
-        y_train = y_trains[i]
-        model.fit(x_train, y_train)
-        train_results = model.predict(x_train)
-        # mae_train, r2_train = evaluate(
-        #     scaler, y_train, train_results, "linear_regression", "train")
-    mae_train = 1
-    r2_train = 1
+# def run_xgboost(X_trains, y_trains, X_test, y_test, scaler, case='1'):
+#     model = xgbmodel(objective='reg:squarederror')
+#     for i in range(0, len(X_trains)):
+#         x_train = X_trains[i]
+#         y_train = y_trains[i]
+#         model.fit(x_train, y_train)
+#         train_results = model.predict(x_train)
+#         # mae_train, r2_train = evaluate(
+#         #     scaler, y_train, train_results, "linear_regression", "train")
+#     mae_train = 1
+#     r2_train = 1
 
-    test_results = model.predict(X_test)
-    mae_test, r2_test, mse_test = evaluate(
-        scaler, y_test, test_results, "xgboost", "test", case)
-    # r2_test = mae_test
-    return mae_train, r2_train, mae_test, r2_test, mse_test
+#     test_results = model.predict(X_test)
+#     mae_test, r2_test, mse_test = evaluate(
+#         scaler, y_test, test_results, "xgboost", "test", case)
+#     # r2_test = mae_test
+#     return mae_train, r2_train, mae_test, r2_test, mse_test
 
 
 def run_linear_regression(X_trains, y_trains, X_test, y_test, scaler, case='1'):
@@ -272,22 +274,40 @@ def run_deeplearning(X_trains, y_trains, X_test, y_test, scaler):
             self.fc2 = nn.Linear(16, 8)
             self.fc3 = nn.Linear(8, 1)
 
-        def forward(self, x):
-            out = self.fc1(x)
-            out = F.relu(self.fc2(out))
-            out = self.fc3(out)
+        def forward(self, x):  # (32, 10)
+            out = self.fc1(x)  # (32, 16)
+            out = F.relu(self.fc2(out))  # (32, 8)
+            out = self.fc3(out)  # (32, 1)
             return out
 
     model = LinearRegression()
     criterion = nn.MSELoss()
     optimizer = torch.optim.SGD(model.parameters(), lr=1e-4)
 
-    bs = 32
-    num_epochs = 3000
+    bs = 64
+    num_epochs = 2
+
+    # Dataset
+    class CustomDataset(Dataset):
+        def __init__(self, X, y):
+            self.X = X
+            self.y = y
+
+        def __len__(self):
+            return self.X.size()[0]
+
+        def __getitem__(self, index):
+            return self.X[index], self.y[index]
+
+    dataset_train = CustomDataset(X_train, y_train)
+
+    # Dataloader
+    loader_train = DataLoader(dataset_train, batch_size=bs,
+                              pin_memory=True, shuffle=True)
+
     for epoch in range(num_epochs):
-        for i in range(0, len(X_train), bs):
-            inputs = X_train[i:i+bs]
-            target = y_train[i:i+bs]
+        for batch in loader_train:
+            inputs, target = batch
 
             out = model(inputs).squeeze()
             loss = criterion(out, target)
@@ -302,10 +322,11 @@ def run_deeplearning(X_trains, y_trains, X_test, y_test, scaler):
     mae_train = 1
     r2_train = 1
     with torch.no_grad():
-        train_results = model(X_train)
+        # train_results = model(X_train)
+        test_results = model(X_test)
         # mae_train, r2_train, mse_train = evaluate(
         #     scaler, y_train, train_results, "dl", "train")
-        test_results = 3 - (X_test)
+        # test_results = 3 - (X_test)
         mae_test, r2_test, mse_test = evaluate(
             scaler, y_test, test_results, "dl", "test")
     return mae_train, r2_train, mae_test, r2_test, mse_test
